@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+//virtual dom transfer to dom
 ReactDOM.render(
   <React.StrictMode>
     <App />
