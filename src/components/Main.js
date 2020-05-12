@@ -1,31 +1,46 @@
 import React, {Component} from 'react';
 import Profile from "./Profile";
 import nba from '../nba-client'
-import DateViewContainer from "./DataViewContainer";
+import DataViewContainer from "./DataViewContainer";
+import SearchBar from './SearchBar';
+import {DEFAULT_PLAYER_INFO} from "../constants";
+
 class Main extends Component {
     state = {
-        playerInfo: {},
-        playerId: 201939
+        playerInfo: DEFAULT_PLAYER_INFO
     }
 
     componentDidMount() {
         window.nba = nba;
-        nba.stats.playerInfo({PlayerID: nba.findPlayer('Stephen Curry').playerId})
-            .then((info) => {
+        this.loadPlayerInfo(this.state.playerInfo.fullName);
+    }
+
+    loadPlayerInfo = (playerName) => {
+            nba.stats.playerInfo({ PlayerID: nba.findPlayer(playerName).playerId}).then((info) => {
                 console.log(info);
                 const playInfo = Object.assign(info.commonPlayerInfo[0], info.playerHeadlineStats[0]);
                 console.log(playInfo);
-                this.setState({playerInfo: playInfo});
+                this.setState({ playerInfo: playInfo });
             })
+        }
 
-    }
+        handleSelectPlayer = (playerName) => {
+            this.loadPlayerInfo(playerName);
+        }
 
-    render() {
+
+
+        render() {
         return (
             <div className='main'>
-                <Profile playerInfo = {this.state.playerInfo} />
-                <DateViewContainer playerId={this.state.playerId}/>
+                <SearchBar
+                    handleSelectPlayer={this.handleSelectPlayer}/>
+                <div className="player">
+                    <Profile playerInfo={this.state.playerInfo} />
+                    <DataViewContainer playerId={this.state.playerInfo.playerId}/>
+                </div>
             </div>
+
         );
     }
 }
